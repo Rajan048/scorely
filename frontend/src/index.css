@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-accent: #4f46e5;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 font-sans antialiased;
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-all shadow-sm;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-all border border-gray-200 shadow-sm;
+  }
+  .card {
+    @apply bg-white border border-slate-200/80 rounded-xl p-6;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.06), 0 4px 16px 0 rgba(0,0,0,0.04);
+  }
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition text-slate-900 placeholder-slate-400;
+  }
+}

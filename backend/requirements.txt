@@ -1,0 +1,33 @@
+# FastAPI & Server
+fastapi
+uvicorn[standard]
+
+# Database - MongoDB
+motor==3.3.2
+beanie==1.25.0
+pymongo==4.6.3
+
+# Authentication
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+
+# Validation & Utils
+pydantic>=2.6.1
+pydantic-settings>=2.1.0
+python-multipart
+email-validator
+
+# AI & ML
+openai
+google-generativeai
+sentence-transformers
+PyPDF2
+Pillow
+
+# Email
+aiosmtplib
+
+# File handling
+python-magic-bin; sys_platform == 'win32'
+python-magic; sys_platform != 'win32'
