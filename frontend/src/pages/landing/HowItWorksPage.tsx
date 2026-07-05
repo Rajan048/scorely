@@ -7,52 +7,52 @@ const steps = [
   {
     step: '01',
     icon: Upload,
-    title: 'Upload Question Paper',
-    desc: 'Teacher uploads the exam PDF or image. Our AI instantly extracts all questions, identifies marks distribution, and organizes them.',
+    title: 'Upload the exam paper',
+    desc: 'Drag and drop your question paper. The system reads the document and breaks down the list of questions and their mark weights.',
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
     border: 'border-slate-200',
-    details: ['PDF, PNG, JPG support', 'AI reads printed & scanned text', 'Questions auto-extracted', 'Marks identified per question'],
+    details: ['Supports PDF or image files', 'Extracts questions automatically', 'Identifies mark weightage', 'Ready in seconds'],
   },
   {
     step: '02',
     icon: Brain,
-    title: 'AI Generates Reference Answers',
-    desc: "Advanced AI analyzes each question and generates comprehensive model answers based on the subject context. Teachers can review and edit these.",
+    title: 'Review the model answers',
+    desc: 'The assistant suggests detailed reference answers based on the subject. You can edit, rewrite, or approve them to set your grading guidelines.',
     color: 'text-violet-600',
     bg: 'bg-violet-50',
     border: 'border-slate-200',
-    details: ['Domain-aware AI answers', 'Subject-context understanding', 'Teacher can edit & approve', 'Stored as grading rubric'],
+    details: ['Auto-drafted model answers', 'Edit any text freely', 'Save custom guidelines', 'Sets the grading baseline'],
   },
   {
     step: '03',
     icon: FileText,
-    title: 'Upload Student Answer Sheets',
-    desc: 'Bulk-upload all student answer sheets (PDF/images/ZIP). The system extracts each student\'s text and maps answers to corresponding questions.',
+    title: 'Drop in student sheets',
+    desc: 'Upload student answer sheets in a batch. The app extracts the handwriting or typed text and aligns it with the correct questions.',
     color: 'text-amber-600',
     bg: 'bg-amber-50',
     border: 'border-slate-200',
-    details: ['Bulk ZIP or individual files', 'Auto student name detection', 'OCR text extraction', 'Q1, Q2... answer mapping'],
+    details: ['Upload bulk ZIP or individual PDFs', 'Handwriting extraction (OCR)', 'Name & ID detection', 'Matches answers to questions'],
   },
   {
     step: '04',
     icon: Zap,
-    title: 'Semantic AI Evaluation',
-    desc: 'Our hybrid engine computes semantic similarity between student answers and reference answers using Sentence-Transformers + keyword analysis.',
+    title: 'Smart answer comparison',
+    desc: 'The evaluation tool reads the meaning of the student answers and compares it to your model answers. It calculates a similarity score based on strictness.',
     color: 'text-emerald-600',
     bg: 'bg-emerald-50',
     border: 'border-slate-200',
-    details: ['Sentence-Transformers model', 'Keyword + semantic scoring', 'Strictness mode: strict/medium/lenient', 'Per-question marks assigned'],
+    details: ['Meaning-based comparison', 'Adjustable strictness settings', 'Detailed drafting score', 'Transparent comparisons'],
   },
   {
     step: '05',
     icon: BarChart3,
-    title: 'Review Results & Export',
-    desc: 'Teachers see detailed per-question breakdowns, similarity scores, AI feedback for each student. Marks can be manually edited and results exported.',
+    title: 'Check and export',
+    desc: 'Review the draft results. You can override any score manually, write notes for students, and download the grades as a spreadsheet.',
     color: 'text-rose-600',
     bg: 'bg-rose-50',
     border: 'border-slate-200',
-    details: ['Question-wise breakdown view', 'Similarity score per answer', 'Manual mark override', 'CSV export for records'],
+    details: ['Teacher reviews every draft', 'Override marks with one click', 'Add personal feedback', 'Download spreadsheet (CSV)'],
   },
 ]
 
@@ -74,7 +74,7 @@ export default function HowItWorksPage() {
             <span className="block bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Works in 5 Steps</span>
           </h1>
           <p className="text-slate-500 text-xl leading-relaxed">
-            From uploading a question paper to getting fully evaluated results — the entire process is automated and takes just minutes.
+            From uploading an exam paper to downloading a spreadsheet of final grades — here is a quick look at the workflow.
           </p>
         </div>
       </section>

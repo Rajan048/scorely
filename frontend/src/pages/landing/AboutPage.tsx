@@ -5,7 +5,7 @@ import Footer from './Footer'
 
 const team = [
   { name: 'Dr. Anika Sharma', role: 'AI Research Lead', initials: 'AS', color: 'from-violet-500 to-purple-700' },
-  { name: 'Rajan Saini', role: 'Full-Stack Engineer', initials: 'RS', color: 'from-indigo-550 to-indigo-650' },
+  { name: 'Rajan Saini', role: 'Full-Stack Engineer', initials: 'RS', color: 'from-amber-500 to-orange-600' },
   { name: 'Priya Mehta', role: 'Product Designer', initials: 'PM', color: 'from-rose-500 to-pink-600' },
   { name: 'Arjun Reddy', role: 'ML Engineer', initials: 'AR', color: 'from-amber-500 to-orange-600' },
 ]
@@ -38,12 +38,12 @@ const values = [
 ]
 
 const milestones = [
-  { year: '2023', event: 'Scorely founded with a mission to automate academic evaluation' },
-  { year: 'Early 2024', event: 'First version launched with basic PDF evaluation' },
-  { year: 'Mid 2024', event: 'Integrated advanced AI for semantic understanding' },
-  { year: 'Late 2024', event: 'Reached 1,000+ answer sheets evaluated' },
-  { year: '2025', event: 'Launched admin portal, bulk upload, and plagiarism detection' },
-  { year: '2026', event: 'Now serving 50+ institutions across India' },
+  { year: '2023', event: 'Started building the first version in a small study room' },
+  { year: 'Early 2024', event: 'Shared the early prototype with a few college professors' },
+  { year: 'Mid 2024', event: 'Added semantic text comparison logic' },
+  { year: 'Late 2024', event: 'Helped grade our first 1,000 papers' },
+  { year: '2025', event: 'Built the multi-teacher workspace and copy checking service' },
+  { year: '2026', event: 'Successfully used by dozens of departments and institutions' },
 ]
 
 export default function AboutPage() {
@@ -74,12 +74,12 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="font-display text-4xl font-bold text-slate-900 mb-5">Our Mission</h2>
+              <h2 className="font-display text-4xl font-bold text-slate-900 mb-5">Why we built this</h2>
               <p className="text-slate-550 leading-relaxed mb-5 text-lg text-slate-650">
-                We're building the future of academic evaluation — where AI handles the repetitive grading work and teachers focus on what they do best: inspiring students.
+                We believe teachers should be teaching, not spending all weekend grading piles of paper exams.
               </p>
               <p className="text-slate-500 leading-relaxed">
-                Our platform doesn't just give a score. It provides detailed feedback per question, similarity analysis, and helps identify areas where students are struggling — giving educators actionable insights they never had before.
+                Scorely was built to help speed up grading. Our system highlights matches, draft-scores sheets based on model answers, and spots copycat submissions, but leaves the final grading decisions completely in your hands.
               </p>
               <div className="mt-8 space-y-3">
                 {['100% transparent AI scoring', 'Teachers always in control', 'Student privacy first', 'Continuous model improvement'].map((p) => (

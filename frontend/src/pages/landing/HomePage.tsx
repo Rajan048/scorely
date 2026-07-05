@@ -16,29 +16,29 @@ const stats = [
 const features = [
   {
     icon: Brain,
-    title: 'AI Powered Evaluation',
-    desc: 'Leverages advanced AI models to generate reference answers and understand student responses with human-like precision.',
+    title: 'Model Answer Helper',
+    desc: 'Instead of writing reference answers manually, upload the paper and let the system draft model answers for you to edit.',
     bg: 'bg-indigo-50',
     text: 'text-indigo-600',
   },
   {
     icon: Zap,
-    title: 'Instant Evaluation',
-    desc: 'Evaluate hundreds of answer sheets in minutes. Our semantic similarity engine processes bulk uploads with lightning speed.',
+    title: 'Bulk Grading',
+    desc: 'Upload a stack of student answer sheets and get draft scores. It understands what the student wrote instead of just checking keywords.',
     bg: 'bg-amber-50',
     text: 'text-amber-600',
   },
   {
     icon: ShieldCheck,
-    title: 'Plagiarism Detection',
-    desc: 'Built-in academic integrity suite cross-checks student answers against each other and web sources automatically.',
+    title: 'Copy Checker',
+    desc: 'Automatically compares student submissions to help you spot copying and maintain integrity.',
     bg: 'bg-emerald-50',
     text: 'text-emerald-600',
   },
   {
     icon: BarChart3,
-    title: 'Rich Analytics',
-    desc: 'Deep performance insights with class-wide heatmaps, score distributions, and top-performer tracking dashboards.',
+    title: 'Class Overview',
+    desc: 'See how the class performed as a whole and quickly find which questions students struggled with the most.',
     bg: 'bg-blue-50',
     text: 'text-blue-600',
   },
@@ -83,15 +83,14 @@ export default function HomePage() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-24">
           <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight mb-6 text-slate-900">
-            AI That Grades
+            Spend less time grading,
             <span className="block bg-gradient-to-r from-primary-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
-              Like a Master Teacher
+              more time teaching.
             </span>
           </h1>
 
           <p className="text-slate-555 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10 text-slate-600">
-            Upload answer sheets. Let Advanced AI evaluate with semantic understanding.
-            Get detailed feedback, marks, and analytics — in minutes, not days.
+            Scorely is a smart assistant that helps teachers grade paper exams and write helpful feedback faster, without losing the human touch.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -126,9 +125,9 @@ export default function HomePage() {
       <section className="py-24 relative bg-white border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-primary-600 font-semibold text-sm uppercase tracking-widest mb-3">Capabilities</p>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 mb-4">Everything You Need</h2>
-            <p className="text-slate-550 text-lg max-w-xl mx-auto text-slate-500">A complete AI evaluation platform designed for modern educational institutions.</p>
+            <p className="text-primary-600 font-semibold text-sm uppercase tracking-widest mb-3">How it helps</p>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 mb-4">Focus on teaching, not paperwork</h2>
+            <p className="text-slate-555 text-lg max-w-xl mx-auto text-slate-500">Scorely handles the repetitive parts of grading so you can spend your time where it matters.</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -178,10 +177,10 @@ export default function HomePage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-primary-100/35 blur-3xl rounded-full" />
             <div className="relative">
               <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
-                Ready to Automate<br />Your Evaluations?
+                Get your weekends back.
               </h2>
-              <p className="text-slate-500 text-lg mb-8 max-w-lg mx-auto">
-                Join thousands of educators saving time with AI-powered grading.
+              <p className="text-slate-555 text-lg mb-8 max-w-lg mx-auto">
+                Try Scorely today. Create an account, upload a test, and see how much time you save.
               </p>
               <Link
                 to="/login"

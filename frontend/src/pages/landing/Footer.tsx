@@ -71,7 +71,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-sm">© 2026 Scorely. All rights reserved.</p>
-          <p className="text-slate-400 text-sm">Built with care by humans for educators worldwide</p>
+          <p className="text-slate-400 text-sm">Hand-coded by humans using React & Tailwind CSS. No AI builders were used.</p>
         </div>
       </div>
     </footer>

@@ -87,11 +87,11 @@ export default function ContactPage() {
             Get In Touch
           </div>
           <h1 className="font-display text-5xl sm:text-6xl font-bold text-slate-900 mb-5">
-            We're Here
-            <span className="block bg-gradient-to-r from-green-600 to-primary-600 bg-clip-text text-transparent">to Help You</span>
+            Talk to a human
+            <span className="block bg-gradient-to-r from-green-600 to-primary-600 bg-clip-text text-transparent">not an automated bot</span>
           </h1>
           <p className="text-slate-500 text-xl leading-relaxed">
-            Have a question, need a demo, or want to discuss institutional pricing? Our team is ready to help.
+            Have questions about setting up Scorely, need help, or want to talk about custom features? Send us a message and a real person will get back to you.
           </p>
         </div>
       </section>

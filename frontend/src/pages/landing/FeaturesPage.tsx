@@ -83,11 +83,11 @@ export default function FeaturesPage() {
             All Features
           </div>
           <h1 className="font-display text-5xl sm:text-6xl font-bold text-slate-900 mb-5">
-            Built for the
-            <span className="block bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Modern Classroom</span>
+            Everything you need
+            <span className="block bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">to speed up grading</span>
           </h1>
           <p className="text-slate-500 text-xl max-w-2xl mx-auto leading-relaxed">
-            Every feature is designed to reduce teacher workload, increase evaluation accuracy, and deliver faster results to students.
+            Simple, practical tools designed by developers who respect a teacher's time.
           </p>
         </div>
       </section>
