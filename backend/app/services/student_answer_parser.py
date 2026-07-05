@@ -9,8 +9,8 @@ def extract_student_answers(text: str) -> Dict[str, str]:
     """
     answers = {}
     
-    # Pattern looks for Q1., Q1:, Question 1, etc.
-    pattern = re.compile(r'(?:^|\n)(?:Q|Question)\s*(\d+)[\.\:\-\s]+', re.IGNORECASE)
+    # Pattern looks for Q1., Q1:, Question 1, etc., allowing optional leading spaces
+    pattern = re.compile(r'(?:^|\n)\s*(?:Q|Question)\s*(\d+)[\.\:\-\s]+', re.IGNORECASE)
     
     matches = list(pattern.finditer(text))
     
