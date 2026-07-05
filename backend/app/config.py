@@ -27,7 +27,8 @@ class Settings(BaseSettings):
     # AI Settings
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
-    AI_PROVIDER: str = "openai"  # openai or gemini
+    NVIDIA_API_KEY: str = ""
+    AI_PROVIDER: str = "openai"  # openai, gemini, or nvidia
     EVALUATION_MODE: str = "medium"  # lenient, medium, strict
     
     # Email (for OTP)

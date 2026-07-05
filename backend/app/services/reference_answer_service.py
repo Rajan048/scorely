@@ -28,5 +28,16 @@ Question: {question_text}
             messages=[{"role": "user", "content": prompt}]
         )
         return response.choices[0].message.content.strip()
+    elif settings.AI_PROVIDER == "nvidia" and settings.NVIDIA_API_KEY:
+        from openai import AsyncOpenAI
+        client = AsyncOpenAI(
+            api_key=settings.NVIDIA_API_KEY,
+            base_url="https://integrate.api.nvidia.com/v1"
+        )
+        response = await client.chat.completions.create(
+            model="meta/llama-3.1-70b-instruct",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.choices[0].message.content.strip()
     else:
         raise ValueError("No valid AI provider configured in .env")

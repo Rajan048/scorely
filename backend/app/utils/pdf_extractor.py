@@ -31,6 +31,44 @@ async def extract_text_with_ai(image: 'Image.Image') -> str:
             except Exception as ex:
                  print(f"Gemini sync fallback failed: {ex}")
                  return ""
+    elif settings.AI_PROVIDER == "nvidia" and settings.NVIDIA_API_KEY:
+        import base64
+        from io import BytesIO
+        from openai import AsyncOpenAI
+        
+        client = AsyncOpenAI(
+            api_key=settings.NVIDIA_API_KEY,
+            base_url="https://integrate.api.nvidia.com/v1"
+        )
+        
+        prompt = "Accurately transcribe all the text in this image. Do not summarize or format, just extract the verbatim text. Pay special attention to handwritten text and numbers."
+        
+        try:
+            buffered = BytesIO()
+            image.save(buffered, format="JPEG")
+            img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
+            
+            response = await client.chat.completions.create(
+                model="meta/llama-3.2-11b-vision-instruct",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{img_str}"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"NVIDIA Vision extraction failed: {e}")
+            return ""
     return ""
 
 

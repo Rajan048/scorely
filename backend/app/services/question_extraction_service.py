@@ -40,6 +40,18 @@ Exam Paper Text:
             response_format={ "type": "json_object" }
         )
         content = response.choices[0].message.content
+    elif settings.AI_PROVIDER == "nvidia" and settings.NVIDIA_API_KEY:
+        from openai import AsyncOpenAI
+        client = AsyncOpenAI(
+            api_key=settings.NVIDIA_API_KEY,
+            base_url="https://integrate.api.nvidia.com/v1"
+        )
+        response = await client.chat.completions.create(
+            model="meta/llama-3.1-70b-instruct",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={ "type": "json_object" }
+        )
+        content = response.choices[0].message.content
     else:
         raise ValueError("No valid AI provider configured in .env")
         
