@@ -72,11 +72,13 @@ export default function AnswerSheets() {
       const fd = new FormData()
       fd.append('question_paper_id', selectedPaper.toString())
       files.forEach((f) => fd.append('files', f))
-      await api.post('/api/teacher/upload-answer-sheets', fd)
+      await api.post('/api/teacher/upload-answer-sheets', fd, {
+        timeout: 180000 // 3 minutes for AI evaluation
+      })
       setFiles([])
       loadSheets(selectedPaper)
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Upload failed')
+      alert(err.response?.data?.detail || 'Upload failed. The AI evaluation may have timed out — please try again.')
     } finally {
       setUploading(false)
     }
@@ -170,7 +172,12 @@ export default function AnswerSheets() {
                   disabled={uploading}
                   className="btn-primary mt-2 flex items-center gap-2"
                 >
-                  {uploading ? <Loader2 size={18} className="animate-spin" /> : 'Upload & Evaluate'}
+                  {uploading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 size={18} className="animate-spin" />
+                      Evaluating with AI...
+                    </span>
+                  ) : 'Upload & Evaluate'}
                 </button>
               </div>
             )}
@@ -192,13 +199,17 @@ export default function AnswerSheets() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {sheets.map((s) => (
+                    {sheets.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="py-8 text-center text-slate-400">No evaluated sheets yet. Upload answer sheets above.</td>
+                      </tr>
+                    ) : sheets.map((s) => (
                       <tr key={s.id} className="hover:bg-slate-50/50 transition">
                         <td className="py-3 px-4 text-slate-800 font-semibold">{s.student_name}</td>
                         <td className="py-3 px-4 text-slate-500 text-sm">
                           {new Date(s.created_at).toLocaleDateString()}
                         </td>
-                        <td className="py-3 px-4 text-primary-655 text-primary-600 font-bold">
+                        <td className="py-3 px-4 text-primary-600 font-bold">
                           {s.total_marks.toFixed(2)}
                         </td>
                         <td className="py-3 px-4">

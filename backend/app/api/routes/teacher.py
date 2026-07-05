@@ -204,6 +204,7 @@ async def upload_answer_sheets(
         raise HTTPException(status_code=400, detail="No questions exist for this paper to evaluate against.")
 
     results_out = []
+    errors = []
     
     # Process each uploaded file
     for file in files:
@@ -212,56 +213,68 @@ async def upload_answer_sheets(
             
         ext = Path(file.filename).suffix.lower()
         if ext not in ALLOWED_EXTENSIONS:
+            errors.append(f"{file.filename}: unsupported file type")
             continue
             
-        path, _ = await save_upload_file(file, "answer_sheets", f"{teacher.id}/{question_paper_id}")
-        student_name = get_student_name_from_filename(file.filename)
-        
-        # Extract student text
-        raw_text = await extract_text_from_file_async(path)
-        if not raw_text:
-            continue
+        try:
+            path, _ = await save_upload_file(file, "answer_sheets", f"{teacher.id}/{question_paper_id}")
+            student_name = get_student_name_from_filename(file.filename)
             
-        # Parse answers via AI (understands unstructured/handwritten OCR text)
-        questions_for_ai = [{"num": idx + 1, "text": q.question_text} for idx, q in enumerate(questions)]
-        parsed_answers = await extract_student_answers_ai(raw_text, questions_for_ai)
-        
-        sim_scores = {}
-        marks_obtained = {}
-        total_obtained = 0.0
-        
-        # Evaluate each question
-        for idx, q in enumerate(questions):
-            q_idx_str = str(idx + 1)
-            # Try to map to regex parsed Q1, Q2, etc. (fallback to empty if not found)
-            s_ans = parsed_answers.get(q_idx_str, "") 
+            # Extract student text via AI OCR
+            logging.info(f"Extracting text from: {file.filename}")
+            raw_text = await extract_text_from_file_async(path)
+            if not raw_text:
+                errors.append(f"{file.filename}: could not extract text (OCR failed)")
+                logging.warning(f"OCR returned empty text for: {file.filename}")
+                continue
             
-            sim, q_mark = evaluate_answer(s_ans, q.reference_answer or "", q.marks)
+            logging.info(f"Extracted {len(raw_text)} chars from {file.filename}")
             
-            # Map by Q id for DB storage
-            q_id_str = str(q.id)
-            sim_scores[q_id_str] = sim
-            marks_obtained[q_id_str] = q_mark
-            total_obtained += q_mark
+            # Parse answers via AI (understands unstructured/handwritten OCR text)
+            questions_for_ai = [{"num": idx + 1, "text": q.question_text} for idx, q in enumerate(questions)]
+            parsed_answers = await extract_student_answers_ai(raw_text, questions_for_ai)
+            logging.info(f"Parsed {len(parsed_answers)} answers for {student_name}")
             
-            # Save raw answer back but mapped by Object ID
-            parsed_answers[q_id_str] = s_ans
+            sim_scores = {}
+            marks_obtained = {}
+            total_obtained = 0.0
             
-        # Cleanup regex mapped keys to avoid duplicate DB keys
-        filtered_answers = {str(q.id): parsed_answers.get(str(q.id), "") for q in questions}
+            # Evaluate each question
+            for idx, q in enumerate(questions):
+                q_idx_str = str(idx + 1)
+                s_ans = parsed_answers.get(q_idx_str, "")
+                
+                sim, q_mark = evaluate_answer(s_ans, q.reference_answer or "", q.marks)
+                
+                q_id_str = str(q.id)
+                sim_scores[q_id_str] = sim
+                marks_obtained[q_id_str] = q_mark
+                total_obtained += q_mark
+                parsed_answers[q_id_str] = s_ans
+                
+            filtered_answers = {str(q.id): parsed_answers.get(str(q.id), "") for q in questions}
 
-        evaluation = EvaluationResult(
-            student_name=student_name,
-            paper_id=qp.id,
-            answers=filtered_answers,
-            similarity_scores=sim_scores,
-            marks=marks_obtained,
-            total_marks=total_obtained
-        )
-        await evaluation.insert()
-        results_out.append({"student_name": student_name, "total_marks": total_obtained, "eval_id": str(evaluation.id)})
+            evaluation = EvaluationResult(
+                student_name=student_name,
+                paper_id=qp.id,
+                answers=filtered_answers,
+                similarity_scores=sim_scores,
+                marks=marks_obtained,
+                total_marks=total_obtained
+            )
+            await evaluation.insert()
+            results_out.append({"student_name": student_name, "total_marks": total_obtained, "eval_id": str(evaluation.id)})
+            logging.info(f"Evaluated {student_name}: {total_obtained} marks")
+            
+        except Exception as e:
+            import traceback
+            logging.error(f"Error processing {file.filename}: {e}")
+            errors.append(f"{file.filename}: {str(e)}")
 
-    return {"uploaded": len(results_out), "results": results_out}
+    if not results_out and errors:
+        raise HTTPException(status_code=400, detail=f"No sheets evaluated. Errors: {'; '.join(errors)}")
+
+    return {"uploaded": len(results_out), "results": results_out, "errors": errors}
 
 @router.get("/evaluation-reports/{paper_id}")
 async def get_evaluation_reports(paper_id: str, user: dict = Depends(require_role(["teacher"]))):
