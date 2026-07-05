@@ -23,7 +23,7 @@ from app.utils.file_utils import (
 from app.utils.pdf_extractor import extract_text_from_file_async
 from app.services.question_extraction_service import extract_questions_from_text
 from app.services.reference_answer_service import generate_reference_answer
-from app.services.student_answer_parser import extract_student_answers
+from app.services.student_answer_parser import extract_student_answers_ai
 from app.services.evaluation_service import evaluate_answer
 
 router = APIRouter(prefix="/teacher", tags=["Teacher"])
@@ -222,8 +222,9 @@ async def upload_answer_sheets(
         if not raw_text:
             continue
             
-        # Parse answers via regex
-        parsed_answers = extract_student_answers(raw_text)
+        # Parse answers via AI (understands unstructured/handwritten OCR text)
+        questions_for_ai = [{"num": idx + 1, "text": q.question_text} for idx, q in enumerate(questions)]
+        parsed_answers = await extract_student_answers_ai(raw_text, questions_for_ai)
         
         sim_scores = {}
         marks_obtained = {}
