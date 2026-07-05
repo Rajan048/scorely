@@ -353,3 +353,61 @@ async def update_evaluation_marks(
     await e.save()
     
     return {"message": "Marks updated successfully", "total_marks": e.total_marks}
+
+
+class QuestionUpdateItem(BaseModel):
+    id: str
+    question_text: str
+    marks: float
+
+
+class QuestionsUpdateBody(BaseModel):
+    questions: List[QuestionUpdateItem]
+
+
+@router.put("/question-papers/{paper_id}/questions")
+async def update_question_paper_questions(
+    paper_id: str,
+    update_data: QuestionsUpdateBody,
+    user: dict = Depends(require_role(["teacher"]))
+):
+    """Update question texts and max marks for a question paper, and recalculate evaluation results."""
+    teacher = await get_teacher(user["sub"])
+    qp = await QuestionPaper.find_one(QuestionPaper.id == ObjectId(paper_id), QuestionPaper.created_by == teacher.id)
+    if not qp:
+        raise HTTPException(status_code=404, detail="Question paper not found")
+        
+    for q_item in update_data.questions:
+        q_obj = await Question.find_one(Question.id == ObjectId(q_item.id), Question.paper_id == qp.id)
+        if q_obj:
+            q_obj.question_text = q_item.question_text
+            q_obj.marks = float(q_item.marks)
+            await q_obj.save()
+            
+    # Re-evaluate all student sheets associated with this paper to update their scores based on new max marks!
+    eval_results = await EvaluationResult.find(EvaluationResult.paper_id == qp.id).to_list()
+    questions = await Question.find(Question.paper_id == qp.id).to_list()
+    
+    for e in eval_results:
+        total_obtained = 0.0
+        for q in questions:
+            q_id_str = str(q.id)
+            sim = e.similarity_scores.get(q_id_str, 0.0)
+            
+            # Re-calculate marks obtained using the same formula:
+            if sim < 0.2:
+                q_mark = 0.0
+            elif sim >= 0.85:
+                q_mark = float(q.marks)
+            else:
+                normalized_sim = (sim - 0.2) / (0.85 - 0.2)
+                q_mark = round(normalized_sim * q.marks, 2)
+                
+            e.marks[q_id_str] = q_mark
+            total_obtained += q_mark
+            
+        e.total_marks = total_obtained
+        await e.save()
+        
+    return {"message": "Questions updated successfully and evaluations recalculated."}
+
