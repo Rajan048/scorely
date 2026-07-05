@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Upload, Brain, BarChart3, ArrowRight, CheckCircle, FileText, Zap,
@@ -63,6 +63,10 @@ const steps = [
 export default function HowItWorksPage() {
   const [activeStep, setActiveStep] = useState(0)
 
+  // Refs for tracking simulation interval & console element scrolling
+  const scanIntervalRef = useRef<any>(null)
+  const consoleEndRef = useRef<HTMLDivElement | null>(null)
+
   // Step 1 Simulation states
   const [isUploading, setIsUploading] = useState(false)
   const [uploaded, setUploaded] = useState(false)
@@ -86,8 +90,19 @@ export default function HowItWorksPage() {
   const [feedback, setFeedback] = useState('Good conceptual understanding, but missed mentioning carbon dioxide and water inputs.')
   const [downloaded, setDownloaded] = useState(false)
 
-  // Reset simulator values when switching tabs
+  // Scroll to bottom of scan logs whenever log size changes
   useEffect(() => {
+    if (consoleEndRef.current) {
+      consoleEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [scanLogs])
+
+  // Reset simulator values when switching tabs and clear intervals safely
+  useEffect(() => {
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current)
+      scanIntervalRef.current = null
+    }
     setUploaded(false)
     setIsUploading(false)
     setRubricSaved(false)
@@ -96,6 +111,15 @@ export default function HowItWorksPage() {
     setScanComplete(false)
     setDownloaded(false)
   }, [activeStep])
+
+  // Cleanup active intervals when page unmounts
+  useEffect(() => {
+    return () => {
+      if (scanIntervalRef.current) {
+        clearInterval(scanIntervalRef.current)
+      }
+    }
+  }, [])
 
   // Step 1 Trigger
   const startUpload = () => {
@@ -108,6 +132,12 @@ export default function HowItWorksPage() {
 
   // Step 3 Trigger
   const startScanning = () => {
+    if (scanning) return // prevent double scans
+
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current)
+    }
+
     setScanning(true)
     setScanLogs([])
     setScanComplete(false)
@@ -126,12 +156,15 @@ export default function HowItWorksPage() {
     ]
 
     let currentLogIndex = 0
-    const interval = setInterval(() => {
+    scanIntervalRef.current = setInterval(() => {
       if (currentLogIndex < logs.length) {
         setScanLogs((prev) => [...prev, logs[currentLogIndex]])
         currentLogIndex++
       } else {
-        clearInterval(interval)
+        if (scanIntervalRef.current) {
+          clearInterval(scanIntervalRef.current)
+          scanIntervalRef.current = null
+        }
         setScanning(false)
         setScanComplete(true)
       }
@@ -403,6 +436,7 @@ export default function HowItWorksPage() {
                               <span>processing...</span>
                             </div>
                           )}
+                          <div ref={consoleEndRef} />
                         </div>
                         {scanComplete && (
                           <div className="flex justify-between items-center gap-3">
