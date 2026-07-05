@@ -1,6 +1,6 @@
 """Application configuration."""
 from pydantic_settings import BaseSettings
-from functools import lru_cache
+
 
 
 class Settings(BaseSettings):
@@ -45,8 +45,9 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        env_file_encoding = "utf-8"
 
 
-@lru_cache()
 def get_settings() -> Settings:
+    """Return application settings, always reading fresh from .env."""
     return Settings()

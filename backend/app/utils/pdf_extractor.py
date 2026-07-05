@@ -4,10 +4,15 @@ from app.config import get_settings
 
 try:
     import pdfplumber
-    from PIL import Image
-    HAS_LIBS = True
+    HAS_PDFPLUMBER = True
 except ImportError:
-    HAS_LIBS = False
+    HAS_PDFPLUMBER = False
+
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
 
 
 async def extract_text_with_ai(image: 'Image.Image') -> str:
@@ -67,6 +72,10 @@ async def extract_text_with_ai(image: 'Image.Image') -> str:
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
+            import traceback
+            with open("ocr_error.txt", "w") as f:
+                f.write(f"Nvidia Vision Exception: {str(e)}\n")
+                traceback.print_exc(file=f)
             print(f"NVIDIA Vision extraction failed: {e}")
             return ""
     return ""
@@ -77,7 +86,7 @@ async def extract_pdf_text_async(file_path: str) -> str:
     Extract text from PDF file using pdfplumber.
     If text is too short or empty, fall back to AI Vision via Gemini.
     """
-    if not HAS_LIBS:
+    if not HAS_PDFPLUMBER:
         return ""
         
     extracted_text = ""
@@ -110,13 +119,18 @@ async def extract_text_from_file_async(file_path: str) -> str:
     if ext == ".pdf":
         return await extract_pdf_text_async(file_path)
     elif ext in {".jpg", ".jpeg", ".png"}:
-        if HAS_LIBS:
+        if HAS_PIL:
             try:
-                # Need to convert image to RGB if not already
-                with Image.open(file_path) as img:
-                    rgb_im = img.convert('RGB')
-                return await extract_text_with_ai(rgb_im)
+                # Load fully into memory BEFORE passing to AI (don't use context manager)
+                img = Image.open(file_path)
+                rgb_im = img.convert('RGB')
+                img.close()
+                result = await extract_text_with_ai(rgb_im)
+                return result
             except Exception as e:
+                import traceback
+                with open("ocr_error.txt", "w") as f:
+                    f.write(f"Image processing exception: {str(e)}\n")
+                    traceback.print_exc(file=f)
                 print(f"Image processing failed: {e}")
     return ""
-

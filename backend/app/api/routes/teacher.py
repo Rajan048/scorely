@@ -116,11 +116,19 @@ async def upload_question_paper(
 
         return {"id": str(qp.id), "message": "Question paper uploaded and parsed successfully!"}
     except ValueError as e:
+        import traceback
+        with open("ocr_error.txt", "w") as f:
+            f.write(f"ValueError: {str(e)}\n")
+            traceback.print_exc(file=f)
         logging.error(f"Value Error during parsing: {e}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+        import traceback
+        with open("ocr_error.txt", "w") as f:
+            f.write(f"Exception: {str(e)}\n")
+            traceback.print_exc(file=f)
         logging.error(f"Failed to process question paper: {e}")
-        raise HTTPException(status_code=500, detail="An error occurred processing the file.")
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 @router.get("/question-papers")
 async def list_question_papers(user: dict = Depends(require_role(["teacher"]))):

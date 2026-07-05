@@ -1,0 +1,5 @@
+ValueError: Failed to extract any text from the provided document.
+Traceback (most recent call last):
+  File "D:\ai_evaluation-main\backend\app\api\routes\teacher.py", line 84, in upload_question_paper
+    raise ValueError("Failed to extract any text from the provided document.")
+ValueError: Failed to extract any text from the provided document.
