@@ -101,7 +101,10 @@ async def upload_question_paper(
 
         for q_data in questions_data:
             q_text = q_data.get("question", "")
-            q_marks = float(q_data.get("marks", 0.0))
+            try:
+                q_marks = float(q_data.get("marks", 0.0))
+            except (ValueError, TypeError):
+                q_marks = 0.0  # default if AI returns 'Not provided' or similar
             
             # 4. Generate Reference Answer
             ref_ans = await generate_reference_answer(q_text)

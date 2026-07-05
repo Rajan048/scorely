@@ -3,18 +3,25 @@ import json
 from ..config import get_settings
 from typing import Dict, Any
 
-settings = get_settings()
 
 async def extract_questions_from_text(text: str) -> Dict[str, Any]:
     """Uses AI to extract questions and marks from the raw text."""
-    prompt = f"""Extract all questions and marks from the following exam paper.
-Return JSON format:
+    settings = get_settings()
+    prompt = f"""Extract all questions and their marks from the following exam paper text.
+Return ONLY valid JSON. The marks field MUST be a number (integer or decimal). If marks are not specified, use 0.
 
+Return this exact JSON format:
 {{
-"questions":[
-{{"question":"...","marks":10}}
-]
+  "questions": [
+    {{"question": "full question text here", "marks": 10}},
+    {{"question": "another question", "marks": 5}}
+  ]
 }}
+
+Rules:
+- "marks" must always be a number, never text like "Not provided" or "N/A"
+- If marks are unknown, use 0
+- Extract every question from the text
 
 Exam Paper Text:
 {text}

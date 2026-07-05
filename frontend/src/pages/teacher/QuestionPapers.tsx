@@ -61,7 +61,7 @@ export default function QuestionPapers() {
       fd.append('file', file)
       
       await api.post('/api/teacher/upload-question-paper', fd, {
-          timeout: 60000 // Give AI some time to parse
+          timeout: 180000 // 3 minutes - AI needs time to OCR and parse
       })
       
       setShowModal(false)

@@ -1,5 +1,6 @@
-ValueError: Failed to extract any text from the provided document.
+ValueError: could not convert string to float: 'Not provided'
 Traceback (most recent call last):
-  File "D:\ai_evaluation-main\backend\app\api\routes\teacher.py", line 84, in upload_question_paper
-    raise ValueError("Failed to extract any text from the provided document.")
-ValueError: Failed to extract any text from the provided document.
+  File "D:\ai_evaluation-main\backend\app\api\routes\teacher.py", line 104, in upload_question_paper
+    q_marks = float(q_data.get("marks", 0.0))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'Not provided'

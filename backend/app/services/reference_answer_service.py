@@ -1,10 +1,10 @@
 """Service for generating reference answers using AI."""
 from ..config import get_settings
 
-settings = get_settings()
 
 async def generate_reference_answer(question_text: str) -> str:
     """Uses AI to generate a reference answer for a question."""
+    settings = get_settings()
     prompt = f"""Generate a concise exam-style reference answer for the following question suitable for full marks.
 
 Question: {question_text}
