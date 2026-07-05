@@ -99,23 +99,32 @@ async def upload_question_paper(
         )
         await qp.insert()
 
-        for q_data in questions_data:
+        # 4. Generate all reference answers in parallel (much faster than sequential)
+        import asyncio
+        
+        async def build_question(q_data):
             q_text = q_data.get("question", "")
+            if not q_text.strip():
+                return None
             try:
                 q_marks = float(q_data.get("marks", 0.0))
             except (ValueError, TypeError):
-                q_marks = 0.0  # default if AI returns 'Not provided' or similar
-            
-            # 4. Generate Reference Answer
-            ref_ans = await generate_reference_answer(q_text)
-            
-            q = Question(
+                q_marks = 0.0
+            try:
+                ref_ans = await generate_reference_answer(q_text)
+            except Exception:
+                ref_ans = ""
+            return Question(
                 paper_id=qp.id,
                 question_text=q_text,
                 marks=q_marks,
                 reference_answer=ref_ans,
             )
-            await q.insert()
+        
+        questions_to_insert = await asyncio.gather(*[build_question(q) for q in questions_data])
+        for q in questions_to_insert:
+            if q is not None:
+                await q.insert()
 
         return {"id": str(qp.id), "message": "Question paper uploaded and parsed successfully!"}
     except ValueError as e:
