@@ -83,31 +83,60 @@ async def extract_text_with_ai(image: 'Image.Image') -> str:
 
 async def extract_pdf_text_async(file_path: str) -> str:
     """
-    Extract text from PDF file using pdfplumber.
-    If text is too short or empty, fall back to AI Vision via Gemini.
+    Extract text from PDF. For scanned/handwritten PDFs, renders each page
+    as an image using PyMuPDF and sends to AI Vision OCR.
     """
-    if not HAS_PDFPLUMBER:
-        return ""
-        
     extracted_text = ""
+
+    # Try PyMuPDF first - works for both text and scanned PDFs
     try:
-        with pdfplumber.open(file_path) as pdf:
-            for page in pdf.pages:
-                text = page.extract_text()
-                
-                # If text is suspiciously short, it might be a scanned image
-                if not text or len(text.strip()) < 50:
-                    try:
-                        im = page.to_image(resolution=300).original
-                        ai_text = await extract_text_with_ai(im)
+        import fitz  # PyMuPDF
+        from PIL import Image as PILImage
+        import io
+
+        doc = fitz.open(file_path)
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+
+            # First try: extract embedded text
+            text = page.get_text().strip()
+
+            if text and len(text) >= 50:
+                extracted_text += text + "\n"
+            else:
+                # Render page as image at high DPI for OCR
+                try:
+                    mat = fitz.Matrix(2.0, 2.0)  # 2x zoom = ~144 DPI
+                    pix = page.get_pixmap(matrix=mat)
+                    img_bytes = pix.tobytes("jpeg")
+                    pil_img = PILImage.open(io.BytesIO(img_bytes)).convert("RGB")
+                    ai_text = await extract_text_with_ai(pil_img)
+                    if ai_text:
                         extracted_text += ai_text + "\n"
-                    except Exception as e:
-                        print(f"AI OCR failed for page: {e}")
-                else:
-                    extracted_text += text + "\n"
+                        print(f"PyMuPDF OCR page {page_num+1}: {len(ai_text)} chars")
+                    else:
+                        print(f"AI OCR returned empty for page {page_num+1}")
+                except Exception as e:
+                    print(f"PyMuPDF render failed page {page_num+1}: {e}")
+        doc.close()
+        return extracted_text.strip()
+
+    except ImportError:
+        print("PyMuPDF not installed, falling back to pdfplumber")
     except Exception as e:
-        print(f"Failed to read PDF {file_path}: {e}")
-        
+        print(f"PyMuPDF failed: {e}, falling back to pdfplumber")
+
+    # Fallback: pdfplumber text-only extraction
+    if HAS_PDFPLUMBER:
+        try:
+            with pdfplumber.open(file_path) as pdf:
+                for page in pdf.pages:
+                    text = page.extract_text()
+                    if text:
+                        extracted_text += text + "\n"
+        except Exception as e:
+            print(f"pdfplumber failed: {e}")
+
     return extracted_text.strip()
 
 
