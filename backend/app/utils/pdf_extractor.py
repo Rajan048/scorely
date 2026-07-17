@@ -94,31 +94,34 @@ async def extract_pdf_text_async(file_path: str) -> str:
         from PIL import Image as PILImage
         import io
 
+        import asyncio
         doc = fitz.open(file_path)
-        for page_num in range(len(doc)):
-            page = doc[page_num]
-
-            # First try: extract embedded text
+        
+        async def process_page(page_num, page):
             text = page.get_text().strip()
-
             if text and len(text) >= 50:
-                extracted_text += text + "\n"
-            else:
-                # Render page as image at high DPI for OCR
-                try:
-                    mat = fitz.Matrix(2.0, 2.0)  # 2x zoom = ~144 DPI
-                    pix = page.get_pixmap(matrix=mat)
-                    img_bytes = pix.tobytes("jpeg")
-                    pil_img = PILImage.open(io.BytesIO(img_bytes)).convert("RGB")
-                    ai_text = await extract_text_with_ai(pil_img)
-                    if ai_text:
-                        extracted_text += ai_text + "\n"
-                        print(f"PyMuPDF OCR page {page_num+1}: {len(ai_text)} chars")
-                    else:
-                        print(f"AI OCR returned empty for page {page_num+1}")
-                except Exception as e:
-                    print(f"PyMuPDF render failed page {page_num+1}: {e}")
+                return text
+            try:
+                mat = fitz.Matrix(2.0, 2.0)  # 2x zoom = ~144 DPI
+                pix = page.get_pixmap(matrix=mat)
+                img_bytes = pix.tobytes("jpeg")
+                pil_img = PILImage.open(io.BytesIO(img_bytes)).convert("RGB")
+                ai_text = await extract_text_with_ai(pil_img)
+                if ai_text:
+                    print(f"PyMuPDF OCR page {page_num+1}: {len(ai_text)} chars")
+                    return ai_text
+                else:
+                    print(f"AI OCR returned empty for page {page_num+1}")
+                    return ""
+            except Exception as e:
+                print(f"PyMuPDF render failed page {page_num+1}: {e}")
+                return ""
+
+        tasks = [process_page(i, doc[i]) for i in range(len(doc))]
+        results = await asyncio.gather(*tasks)
         doc.close()
+        
+        extracted_text = "\n".join([r for r in results if r])
         return extracted_text.strip()
 
     except ImportError:
