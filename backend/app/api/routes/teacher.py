@@ -108,8 +108,10 @@ async def upload_question_paper(
                 return None
             try:
                 q_marks = float(q_data.get("marks", 0.0))
+                if q_marks <= 0.0:
+                    q_marks = 10.0
             except (ValueError, TypeError):
-                q_marks = 0.0
+                q_marks = 10.0
             try:
                 ref_ans = await generate_reference_answer(q_text)
             except Exception:
